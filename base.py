@@ -2,10 +2,17 @@ import sqlite3
 #Создаем подключение к базе данных (файл database.db будет создан)
 connection  = sqlite3.connect ( 'database .db' )
 cursor =connection.cursor()
-#Вывожу людей старше 23 лет
-cursor.execute('SELECT username, age FROM Users WHERE age > ?', (23,))
+#Получаю средний возраст пользователей для каждого возраста
+cursor.execute('SELECT age, AVG (age) FROM Users GROUP BY age')
 users = cursor.fetchall()
 for user in users:
     print(user)
+
+
+#Фильтруем группы по среднему возрасту больше 20
+cursor.execute('SELECT age, AVG (age) FROM Users GROUP BY age HAVING AVG(age) > ?',(30,))
+us = cursor.fetchall()
+for userq in us:
+    print(userq)
 
 connection.close()
