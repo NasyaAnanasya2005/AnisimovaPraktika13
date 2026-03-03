@@ -98,7 +98,7 @@ for user in users_list:
 cursor.execute('SELECT * FROM Users WHERE age IS NULL ')
 unknown_age_users = cursor.fetchall()
 for user in unknown_age_users:
-    print(user)"""
+    print(user)
 
 #Использование операторов BEGIN, COMMIT и ROLLBACK
 try:
@@ -113,7 +113,23 @@ try:
 
 except:
     #Отменяем транзацию в случае ошибки
-    cursor.execute('ROLLBACK')
+    cursor.execute('ROLLBACK')"""
+
+#Автоматическое управление транзакциями с помощью комплексных менеджеров
+#Использование операторов BEGIN, COMMIT и ROLLBACK
+try:
+    #Начинаем транзакцию avto
+    with connection:
+        #Операции выполняю, заполняю
+        cursor.execute('INSERT INTO Users (username,email) VALUES (?,?)', ('vika', 'vvika05@mail.ru'))
+        cursor.execute('INSERT INTO Users (username,email) VALUES (?,?)', ('lexa', 'lixach05@mail.ru'))    
+    #Подтверждаю изменения
+    cursor.execute('COMMIT')
+
+except:
+    #Ошибки буду приводить к автоматическому откату транзакции
+    pass
+
 connection.close()
 
 
