@@ -3,6 +3,9 @@ import sqlite3
 connection  = sqlite3.connect ( 'database .db' )
 cursor =connection.cursor()
 
-cursor.execute('DELETE FROM Users  WHERE username = ?', ('Oleg',))
-connection.commit()
+cursor.execute('SELECT * FROM Users')
+users = cursor.fetchall()
+for user in users:
+    print(user)
+
 connection.close()
