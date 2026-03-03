@@ -29,7 +29,7 @@ for user in users:
 cursor.execute('SELECT COUNT(*) FROM Users')
 users = cursor.fetchone()[0]
 print("Общее кол-во пользователей: ", users)
-connection.close()"""
+connection.close()
 
 #Вычисление суммы возрастов пользователей SUM
 cursor.execute('SELECT SUM(age) FROM Users')
@@ -52,7 +52,11 @@ print("Минимальный возраст пользователей: ", user
 #MAX
 cursor.execute('SELECT MAX(age) FROM Users')
 userssss = cursor.fetchone()[0]
-print("Максимальный возраст пользователей: ", userssss)
+print("Максимальный возраст пользователей: ", userssss)"""
 
-
+#Сложные запросы
+cursor.execute('''SELECT username, age FROM Users WHERE age = (SELECT MAX(age) FROM Users)''')
+users = cursor.fetchall()
+for user in users:
+    print(user)
 connection.close()
