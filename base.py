@@ -24,13 +24,35 @@ for user in users:
 cursor.execute('''SELECT username, age, AVG(age) FROM Users GROUP BY age HAVING AVG(age) > ? ORDER BY age DESC ''', (20,))
 users = cursor.fetchall()
 for user in users:
-    print(user)"""
+    print(user)
 #Подсчет общего числа пользователей
 cursor.execute('SELECT COUNT(*) FROM Users')
 users = cursor.fetchone()[0]
 print("Общее кол-во пользователей: ", users)
-connection.close()
+connection.close()"""
 
+#Вычисление суммы возрастов пользователей SUM
+cursor.execute('SELECT SUM(age) FROM Users')
+users = cursor.fetchone()[0]
+print("Общая сумма возрастов пользователей: ", users)
+
+
+#AVG
+cursor.execute('SELECT AVG(age) FROM Users')
+userss = cursor.fetchone()[0]
+print("Средний возраст пользователей: ", userss)
+
+
+#MIN
+cursor.execute('SELECT MIN(age) FROM Users')
+usersss = cursor.fetchone()[0]
+print("Минимальный возраст пользователей: ", usersss)
+
+
+#MAX
+cursor.execute('SELECT MAX(age) FROM Users')
+userssss = cursor.fetchone()[0]
+print("Максимальный возраст пользователей: ", userssss)
 
 
 connection.close()
