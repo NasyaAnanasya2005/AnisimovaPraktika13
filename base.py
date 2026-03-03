@@ -81,7 +81,7 @@ for user in us:
 cursor.execute('SELECT * FROM Users ')
 use = cursor.fetchall()
 for user in use:
-    print(user)"""
+    print(user)
 #Выбираю всех пользователей
 cursor.execute('SELECT * FROM Users ')
 use = cursor.fetchall()
@@ -92,7 +92,14 @@ for user in use:
     users_list.append(users_dict)
 #выводим результат
 for user in users_list:
+    print(user)"""
+
+#Выбираю пользователей с неизвестным возрастом(у меня таких нет)
+cursor.execute('SELECT * FROM Users WHERE age IS NULL ')
+unknown_age_users = cursor.fetchall()
+for user in unknown_age_users:
     print(user)
+    
 connection.close()
 
 
