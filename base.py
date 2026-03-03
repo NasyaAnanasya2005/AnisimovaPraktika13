@@ -92,14 +92,28 @@ for user in use:
     users_list.append(users_dict)
 #выводим результат
 for user in users_list:
-    print(user)"""
+    print(user)
 
 #Выбираю пользователей с неизвестным возрастом(у меня таких нет)
 cursor.execute('SELECT * FROM Users WHERE age IS NULL ')
 unknown_age_users = cursor.fetchall()
 for user in unknown_age_users:
-    print(user)
-    
+    print(user)"""
+
+#Использование операторов BEGIN, COMMIT и ROLLBACK
+try:
+    #Начинаем транзакцию
+    cursor.execute('BEGIN')
+
+    #Операции выполняю, заполняю
+    cursor.execute('INSERT INTO Users (username,email) VALUES (?,?)', ('nina', 'nina05@mail.ru'))
+    cursor.execute('INSERT INTO Users (username,email) VALUES (?,?)', ('jija', 'jija05@mail.ru'))    
+    #Подтверждаю изменения
+    cursor.execute('COMMIT')
+
+except:
+    #Отменяем транзацию в случае ошибки
+    cursor.execute('ROLLBACK')
 connection.close()
 
 
