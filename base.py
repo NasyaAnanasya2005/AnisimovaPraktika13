@@ -19,11 +19,18 @@ for userq in us:
 cursor.execute('SELECT username, age FROM Users ORDER BY age DESC')
 users = cursor.fetchall()
 for user in users:
-    print(user)"""
+    print(user)
 #Комбинировала операторы для выполнения более сложных запросов
 cursor.execute('''SELECT username, age, AVG(age) FROM Users GROUP BY age HAVING AVG(age) > ? ORDER BY age DESC ''', (20,))
 users = cursor.fetchall()
 for user in users:
-    print(user)
+    print(user)"""
+#Подсчет общего числа пользователей
+cursor.execute('SELECT COUNT(*) FROM Users')
+users = cursor.fetchone()[0]
+print("Общее кол-во пользователей: ", users)
+connection.close()
+
+
 
 connection.close()
