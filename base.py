@@ -52,11 +52,18 @@ print("Минимальный возраст пользователей: ", user
 #MAX
 cursor.execute('SELECT MAX(age) FROM Users')
 userssss = cursor.fetchone()[0]
-print("Максимальный возраст пользователей: ", userssss)"""
+print("Максимальный возраст пользователей: ", userssss)
 
 #Сложные запросы
 cursor.execute('''SELECT username, age FROM Users WHERE age = (SELECT MAX(age) FROM Users)''')
 users = cursor.fetchall()
 for user in users:
+    print(user)"""
+#Получение результатов запроса в виде списка кортежей
+cursor.execute('SELECT * FROM Users ')
+users = cursor.fetchall()
+for user in users:
     print(user)
 connection.close()
+
+
