@@ -64,7 +64,7 @@ for user in users:
 cursor.execute('SELECT * FROM Users ')
 users = cursor.fetchall()
 for user in users:
-    print(user)"""
+    print(user)
 #Выбираю первого пользователя
 cursor.execute('SELECT * FROM Users ')
 u = cursor.fetchone()
@@ -81,6 +81,17 @@ for user in us:
 cursor.execute('SELECT * FROM Users ')
 use = cursor.fetchall()
 for user in use:
+    print(user)"""
+#Выбираю всех пользователей
+cursor.execute('SELECT * FROM Users ')
+use = cursor.fetchall()
+users_list = []
+#Преобразую результаты в список словарей
+for user in use:
+    users_dict = { 'id': user[0], 'username': user[1], 'email': user[2], 'age': user[3]}
+    users_list.append(users_dict)
+#выводим результат
+for user in users_list:
     print(user)
 connection.close()
 
