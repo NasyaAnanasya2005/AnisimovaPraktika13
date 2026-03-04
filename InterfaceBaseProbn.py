@@ -61,8 +61,33 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "Удалить"))
         self.pushButton_3.setText(_translate("MainWindow", "Обновить"))
     def dobav(self): #Добавить запись
+        row = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(row)
+        
     def dele(self): #Удалить запись
+        selected_items = self.tableWidget.selectedItems()
+
+        if not selected_items:
+            showerror("Ошибка","Выберите поле")
+            return
+
+        row = selected_items[0].row() #Номер строки
+        self.tableWidget.removeRow(row)
+        print("Удалила строку")
     def upd(self): #Обновить запись
+        conn = sqlite3.connect('baseInterface')
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Ученики")
+        for i in range(self.tableWidget.rowCount()):
+            row = []
+            for j in range(self.tableWidget.columnCount()):
+                cell = self.tableWidget.item(i,j)
+                
+                row.append(cell.text() if cell else "")
+                
+            cursor.execute("INSERT INTO Ученики VALUES(?,?,?,?,?)", row)
+        conn.commit() #Сохранить соед.
+        conn.close() #Закрыть соед.
     def appendd(self):
         conn = sqlite3.connect('baseInterface')
         cursor = conn.cursor()
