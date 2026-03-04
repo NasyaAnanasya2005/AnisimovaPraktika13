@@ -19,9 +19,12 @@ class Ui_Form(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../../../Downloads/free-icon-open-book-2702134.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Form.setWindowIcon(icon)
+        Form.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(160, 20, 261, 91))
-        self.pushButton.setStyleSheet("font: 18pt \"Impact\";")
+        self.pushButton.setGeometry(QtCore.QRect(150, 40, 581, 51))
+        self.pushButton.setStyleSheet("font: 12pt \"Segoe UI\";\n"
+"\n"
+"background-color: rgb(103, 186, 128);")
         self.pushButton.setObjectName("pushButton")
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(20, 10, 121, 101))
@@ -33,6 +36,8 @@ class Ui_Form(object):
         self.label.setObjectName("label")
         self.tableWidget = QtWidgets.QTableWidget(Form)
         self.tableWidget.setGeometry(QtCore.QRect(10, 120, 721, 501))
+        self.tableWidget.setStyleSheet("background-color: rgb(244, 232, 211);\n"
+"font: 12pt \"Segoe UI\";")
         self.tableWidget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.tableWidget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -50,6 +55,7 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Книги"))
         self.pushButton.setText(_translate("Form", "Добавить запись"))
 
 

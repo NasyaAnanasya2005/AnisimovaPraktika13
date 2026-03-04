@@ -16,21 +16,29 @@
     <height>100</height>
    </size>
   </property>
+  <property name="windowTitle">
+   <string>Книги</string>
+  </property>
   <property name="windowIcon">
    <iconset>
     <normaloff>../../../Downloads/free-icon-open-book-2702134.png</normaloff>../../../Downloads/free-icon-open-book-2702134.png</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>20</y>
-     <width>261</width>
-     <height>91</height>
+     <x>150</x>
+     <y>40</y>
+     <width>581</width>
+     <height>51</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">font: 18pt &quot;Impact&quot;;</string>
+    <string notr="true">font: 12pt &quot;Segoe UI&quot;;
+
+background-color: rgb(103, 186, 128);</string>
    </property>
    <property name="text">
     <string>Добавить запись</string>
@@ -72,6 +80,10 @@
      <width>721</width>
      <height>501</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(244, 232, 211);
+font: 12pt &quot;Segoe UI&quot;;</string>
    </property>
    <property name="verticalScrollBarPolicy">
     <enum>Qt::ScrollBarAsNeeded</enum>
