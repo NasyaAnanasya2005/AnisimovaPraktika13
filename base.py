@@ -113,10 +113,10 @@ try:
 
 except:
     #Отменяем транзацию в случае ошибки
-    cursor.execute('ROLLBACK')"""
+    cursor.execute('ROLLBACK')
 
 #Автоматическое управление транзакциями с помощью комплексных менеджеров
-#Использование операторов BEGIN, COMMIT и ROLLBACK
+
 try:
     #Начинаем транзакцию avto
     with connection:
@@ -128,7 +128,14 @@ try:
 
 except:
     #Ошибки буду приводить к автоматическому откату транзакции
-    pass
+    pass"""
+
+#Использование подготовленных запросов для повышения производительности
+query = 'SELECT * FROM Users WHERE age > ?'
+cursor.execute(query, (23,))
+users = cursor.fetchall()
+for user in users:
+    print(user)
 
 connection.close()
 
