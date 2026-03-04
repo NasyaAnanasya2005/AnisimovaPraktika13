@@ -52,12 +52,12 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
-
+        
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Книги"))
         self.pushButton.setText(_translate("Form", "Добавить запись"))
-
+ 
 
 if __name__ == "__main__":
     import sys
