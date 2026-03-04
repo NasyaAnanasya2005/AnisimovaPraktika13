@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import sqlite3
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -50,14 +50,34 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+        self.appendd()
+        self.pushButton.clicked.connect(self.dobav)
+        self.pushButton_2.clicked.connect(self.dele)
+        self.pushButton_3.clicked.connect(self.upd)
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Добавить"))
         self.pushButton_2.setText(_translate("MainWindow", "Удалить"))
         self.pushButton_3.setText(_translate("MainWindow", "Обновить"))
+    def dobav(self): #Добавить запись
+    def dele(self): #Удалить запись
+    def upd(self): #Обновить запись
+    def appendd(self):
+        conn = sqlite3.connect('baseInterface')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Ученики")
+        rows = cursor.fetchall()
 
+        self.tableWidget.setRowCount(len(rows))
+        self.tableWidget.setColumnCount(len(rows[0]) if rows else 0)
+
+        for i, row in enumerate(rows):
+            for j, value in enumerate(row):
+                self.tableWidget.setItem(i, j, QtWidgets.QTableWidgetItem(str(value)))
+
+        conn.close()
+        
 
 if __name__ == "__main__":
     import sys
