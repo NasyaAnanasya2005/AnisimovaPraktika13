@@ -147,9 +147,13 @@ for user in users:
     print(user)
 #Создание триггеров для автоматизации операций при изменении данных
 cursor.execute('''CREATE TRIGGER IF NOT EXISTS update_created_at AFTER INSERT ON Users BEGIN UPDATE Users SET created_at = CURRENT_TIMESTAMP' WHERE id = NEW.id; END; ''')
-"""
+
 #Работа с индексами для оптимизации запросов
-cursor.execute('CREATE INDEX idx_username ON Users (username) ' )
+cursor.execute('CREATE INDEX idx_username ON Users (username) ' )"""
+
+
+
+
 #Закрываем соединение
 connection.commit()
 connection.close()
