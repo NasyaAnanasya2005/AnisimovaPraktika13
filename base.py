@@ -128,15 +128,24 @@ try:
 
 except:
     #Ошибки буду приводить к автоматическому откату транзакции
-    pass"""
+    pass
 
 #Использование подготовленных запросов для повышения производительности
 query = 'SELECT * FROM Users WHERE age > ?'
 cursor.execute(query, (23,))
 users = cursor.fetchall()
 for user in users:
-    print(user)
+    print(user)"""
 
+#Создаем представление для активных пользователей
+cursor.execute('CREATE VIEW ActiveUsers AS SELECT * FROM Users WHERE id = 1')
+#Выбираем активных пользователей
+cursor.execute('SELECT  * FROM ActiveUsers')
+users = cursor.fetchall()
+#Выводим результаты
+for user in users: 
+    print(user)
+#Закрываем соединение
 connection.close()
 
 
