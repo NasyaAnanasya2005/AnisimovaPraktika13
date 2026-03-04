@@ -135,7 +135,7 @@ query = 'SELECT * FROM Users WHERE age > ?'
 cursor.execute(query, (23,))
 users = cursor.fetchall()
 for user in users:
-    print(user)"""
+    print(user)
 
 #Создаем представление для активных пользователей
 cursor.execute('CREATE VIEW ActiveUsers AS SELECT * FROM Users WHERE id = 1')
@@ -144,8 +144,13 @@ cursor.execute('SELECT  * FROM ActiveUsers')
 users = cursor.fetchall()
 #Выводим результаты
 for user in users: 
-    print(user)
+    print(user)"""
+#Создание триггеров для автоматизации операций при изменении данных
+cursor.execute('''CREATE TRIGGER IF NOT EXISTS update_created_at AFTER INSERT ON Users BEGIN UPDATE Users SET created_at = CURRENT_TIMESTAMP' WHERE id = NEW.id; END; ''')
+
+
 #Закрываем соединение
+connection.commit()
 connection.close()
 
 
