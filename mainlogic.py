@@ -40,21 +40,22 @@ class partner_window (QDialog): #Класс главного окна добав
             self.ui.lineEdit_4.text(),  # Год издания
             self.ui.lineEdit_5.text()  # Цена
         ]
-        if any([item == ' ' for item in partner_data]): #Проверка на пустые значения
+        if any([item == ' ' for item in partner_data[:-1]]): #Проверка на пустые значения
             QMessageBox.critical(self, 'Действие не выполнено',  'Заполните поля', QMessageBox.Ok)
             return
         q = QMessageBox.question(self, 'Подтвердите действие', 'Вы действительно хотите изменить?', QMessageBox.Ok | QMessageBox.Cancel)
         if q == QMessageBox.Ok:
             try:
-                cursor.execute("UPDATE Книги SET Название=?, Издательство=?, Автор=?, \"Год издания\"=?, Цена=? WHERE idКниги=?",  partner_data)
-                self.parent().conn.commit()
-                self.parent().read_books() # Обновление списка книг на главном окне
-                main_form.update_partners() #Обновление списка партнеров на главное окне
-                QMessageBox.information(self, 'Действие выполнено' , 'Добавлен', QMessageBox.Ok)
+                # Получаем ID из родительского окна
+                book_id = self.parent().books_data[self.parent().ui.tableWidget.currentRow()][0]
+                cursor.execute("UPDATE Книги SET Название=?, Издательство=?, Автор=?, \"Год издания\"=?, Цена=? WHERE idКниги=?", partner_data + [book_id])
+                conn.commit()
+                main_form.read_partners() #Обновление списка партнеров на главное окне
+                QMessageBox.information(self, 'Действие выполнено' , 'Изменено', QMessageBox.Ok)
                 self.accept() #Закрытие диалоговое окна
                 return
-            except:
-                QMessageBox.critical(self, 'Действие не выполнено', 'Ошибка изменения записи', QMessageBox.Ok)    
+            except Exception as e:
+                QMessageBox.critical(self, 'Действие не выполнено', f'Ошибка изменения: {str(e)}', QMessageBox.Ok)    
 class main_window (QWidget): #Класс главного окна программы
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
