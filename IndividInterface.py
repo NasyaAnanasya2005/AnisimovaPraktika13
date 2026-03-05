@@ -21,11 +21,20 @@ class Ui_Form(object):
         Form.setWindowIcon(icon)
         Form.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(150, 40, 581, 51))
+        self.pushButton.setGeometry(QtCore.QRect(150, 40, 200, 51))
         self.pushButton.setStyleSheet("font: 12pt \"Segoe UI\";\n"
 "\n"
 "background-color: rgb(103, 186, 128);")
         self.pushButton.setObjectName("pushButton")
+
+        self.pushButton_1 = QtWidgets.QPushButton(Form)
+        self.pushButton_1.setGeometry(QtCore.QRect(380, 40, 200, 51))
+        self.pushButton_1.setStyleSheet("font: 12pt \"Segoe UI\";\n"
+"\n"
+"background-color: rgb(103, 186, 128);")
+        self.pushButton_1.setObjectName("pushButton")
+
+        
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(20, 10, 121, 101))
         self.label.setMinimumSize(QtCore.QSize(100, 100))
@@ -57,6 +66,7 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Книги"))
         self.pushButton.setText(_translate("Form", "Добавить запись"))
+        self.pushButton_1.setText(_translate("Form", "Удалить запись"))
  
 
 if __name__ == "__main__":
