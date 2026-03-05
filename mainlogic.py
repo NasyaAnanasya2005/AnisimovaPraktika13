@@ -5,6 +5,37 @@ import sys
 import sqlite3 
 from IndividInterface import Ui_Form as main_interface #Импорт интерфейса
 from IndividDobavRedakt import Ui_Dialog as partner_interface
+from login import Ui_Dialog as login_interface
+class loginWindow(QDialog): #окно логирования
+    def __init__(self, parent = None):
+        QDialog.__init__(self, parent)
+        self.ui = login_interface()
+        self.ui.setupUi(self)
+
+        self.ui.buttonBox.accepted.connect(self.log)
+        self.ui.buttonBox.rejected.connect(self.log_gost)
+    def log(self): #функция входа
+        log = "admin"
+        pas = "admin123"
+        login = self.ui.lineEdit.text()
+        password = self.ui.lineEdit_2.text()
+        if login == log and password == pas:
+            QMessageBox.information(self, 'Информация', 'Вы успешно вошли как Администратор!', QMessageBox.Ok)
+            main_win.set_roles(role='admin')
+            main_win.show()
+            self.accept() # Закрываем окно логина
+        else:
+            QMessageBox.warning(self, 'Ошибка', 'Неверный логин или пароль!', QMessageBox.Ok)
+            self.ui.lineEdit.clear()
+            self.ui.lineEdit_2.clear()
+            self.ui.lineEdit.setFocus()
+            
+
+    def log_gost(self): #если пользователь ажал кнопку Отмена, то заходит как Гость
+        QMessageBox.information(self, 'Информация', 'Вы зашли как Гость.', QMessageBox.Ok)
+        main_win.set_roles()
+        main_win.show()
+        self.accept() # Закрываем окно логина
 class partner_window (QDialog): #Класс главного окна добавления/редактирования
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
