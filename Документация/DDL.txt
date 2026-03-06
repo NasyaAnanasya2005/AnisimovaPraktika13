@@ -1,0 +1,33 @@
+-- Книги определение
+
+CREATE TABLE Книги (
+	idКниги INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	Название TEXT,
+	Издательство TEXT,
+	Автор TEXT,
+	"Год издания" TEXT,
+	Цена INTEGER
+, Фото TEXT);
+
+
+-- ОптовыеПокупатели определение
+
+CREATE TABLE ОптовыеПокупатели (
+	idПокупателя INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	ФирмаПокупатель TEXT,
+	Город TEXT
+);
+
+
+-- Заказики определение
+
+CREATE TABLE Заказики (
+	idЗаказа INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	"Дата заказа" TEXT,
+	Количество INTEGER,
+	Скидка INTEGER,
+	idКниги INTEGER,
+	idПокупатели INTEGER,
+	CONSTRAINT Заказики_Книги_FK FOREIGN KEY (idКниги) REFERENCES Книги(idКниги) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT Заказики_ОптовыеПокупатели_FK FOREIGN KEY (idПокупатели) REFERENCES ОптовыеПокупатели(idПокупателя) ON DELETE CASCADE ON UPDATE CASCADE
+);
