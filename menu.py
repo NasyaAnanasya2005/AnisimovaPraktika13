@@ -58,10 +58,9 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
-        self.pushButton.clicked.connect(self.ex)
-        self.pushButton_2.clicked.connect(self.TableKnigi)
-        #self.pushButton_3.clicked.connect(self.TableOptBuy)
-        #self.pushButton_4.clicked.connect(self.TableZakaz)
+        
+        
+       
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Выбор таблицы"))
@@ -71,12 +70,8 @@ class Ui_Form(object):
 "покупатели"))
         self.pushButton_4.setText(_translate("Form", "Заказики"))
         self.label_2.setText(_translate("Form", "Выберите таблицу для изучения"))
-    def ex(self):
-        Form.close()
-    def TableKnigi(self):
-        os.startfile("mainlogic.py")
-    #def TableOptBuy(self):
-    #def TableZakaz(self):
+    
+   
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
