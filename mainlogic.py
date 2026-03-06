@@ -5,12 +5,40 @@ import sys
 import sqlite3 
 from IndividInterface import Ui_Form as main_interface #Импорт интерфейса
 from IndividDobavRedakt import Ui_Dialog as partner_interface
-from login import Ui_Dialog as login_interface
+from login import Ui_Dialog as login_interfacec
+from menu import Ui_Form as menu_interface  # Импорт интерфейса меню
 import os
 import shutil
 from PIL import Image
 from PyQt5.QtGui import QIcon, QPixmap
-
+class menuWindow(QWidget):  # Окно выбора таблицы
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        self.ui = menu_interface()
+        self.ui.setupUi(self)
+        
+        # Подключаем кнопки
+        self.ui.pushButton_2.clicked.connect(self.open_knigi)  # Книги
+        self.ui.pushButton_3.clicked.connect(self.open_buyers)  # Оптовые покупатели
+        self.ui.pushButton_4.clicked.connect(self.open_orders)  # Заказы
+        self.pushButton.clicked.connect(self.ex) #Выход
+    def ex(self):
+        Form.close()
+    def open_knigi(self):
+        #Открыть таблицу книг
+        self.knigi_window = main_window()  # Создаем окно книг
+        self.knigi_window.show()  # Показываем его
+        self.hide()  # Прячем меню (опционально)
+    
+    def open_buyers(self):
+        #Открыть таблицу оптовых покупателей
+        QMessageBox.information(self, 'Информация', 'Таблица покупателей в разработке', QMessageBox.Ok)
+        # Здесь вызов окна с покупателями
+    
+    def open_orders(self):
+        #Открыть таблицу заказов
+        QMessageBox.information(self, 'Информация', 'Таблица заказов в разработке', QMessageBox.Ok)
+        # Здесь вызов окна с заказами
 class loginWindow(QDialog): #окно логирования
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
