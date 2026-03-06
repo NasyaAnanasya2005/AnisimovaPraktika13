@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'IndividInterface.ui'
+# Form implementation generated from reading ui file 'IndividInterfaceOptBuy.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -21,17 +21,11 @@ class Ui_Form(object):
         Form.setWindowIcon(icon)
         Form.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.pushButton = QtWidgets.QPushButton(Form)
-        self.pushButton.setGeometry(QtCore.QRect(150, 40, 200, 51))
+        self.pushButton.setGeometry(QtCore.QRect(150, 40, 201, 51))
         self.pushButton.setStyleSheet("font: 12pt \"Segoe UI\";\n"
 "\n"
 "background-color: rgb(103, 186, 128);")
         self.pushButton.setObjectName("pushButton")
-        self.pushButton_1 = QtWidgets.QPushButton(Form)
-        self.pushButton_1.setGeometry(QtCore.QRect(360, 40, 200, 51))
-        self.pushButton_1.setStyleSheet("font: 12pt \"Segoe UI\";\n"
-"\n"
-"background-color: rgb(103, 186, 128);")
-        self.pushButton_1.setObjectName("pushButton")
         self.label = QtWidgets.QLabel(Form)
         self.label.setGeometry(QtCore.QRect(20, 10, 121, 101))
         self.label.setMinimumSize(QtCore.QSize(100, 100))
@@ -55,16 +49,22 @@ class Ui_Form(object):
         self.tableWidget.horizontalHeader().setDefaultSectionSize(250)
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.verticalHeader().setDefaultSectionSize(100)
+        self.pushButton_2 = QtWidgets.QPushButton(Form)
+        self.pushButton_2.setGeometry(QtCore.QRect(370, 40, 201, 51))
+        self.pushButton_2.setStyleSheet("font: 12pt \"Segoe UI\";\n"
+"\n"
+"background-color: rgb(103, 186, 128);")
+        self.pushButton_2.setObjectName("pushButton_2")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
-        
+
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Книги"))
+        Form.setWindowTitle(_translate("Form", "Оптовые покупатели"))
         self.pushButton.setText(_translate("Form", "Добавить запись"))
-        self.pushButton_1.setText(_translate("Form", "Удалить запись"))
- 
+        self.pushButton_2.setText(_translate("Form", "Удалить запись"))
+
 
 if __name__ == "__main__":
     import sys
