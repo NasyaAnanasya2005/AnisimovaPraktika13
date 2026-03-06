@@ -92,10 +92,21 @@ class partner_window (QDialog): #Класс главного окна добав
                 QMessageBox.critical(self, 'Действие не выполнено', f'Ошибка добавления: {str(e)}', QMessageBox.Ok)
     def update_partner(self):
         photo_path = self.ui.lineEdit_8.text()#поле для фото
-        if photo_path:
-            photo_name = photo_path.split('/')[-1]
+        # Получаем ID книги
+        book_id = self.parent().books_data[self.parent().ui.tableWidget.currentRow()][0]
+    
+        # Получаем старое фото из БД
+        cursor.execute('SELECT Фото FROM Книги WHERE idКниги=?', [book_id])
+        old_photo = cursor.fetchone()[0]
+        if old_photo is None:
+            old_photo = ' '
+        # Обработка нового фото
+        if photo_path:  # если выбрали новое фото
+            file_ext = photo_path.split('.')[-1]  # расширение файла
+            photo_name = f"book_{book_id}.{file_ext}"
         else:
-            photo_name = ' '
+            photo_name = old_photo  # оставляем старое фото
+            
         partner_data = [
             self.ui.lineEdit.text(),  # Название
             self.ui.lineEdit_2.text(),  # Издательство
@@ -110,31 +121,12 @@ class partner_window (QDialog): #Класс главного окна добав
         q = QMessageBox.question(self, 'Подтвердите действие', 'Вы действительно хотите изменить?', QMessageBox.Ok | QMessageBox.Cancel)
         if q == QMessageBox.Ok:
             try:
-                # Получаем ID из родительского окна
-                book_id = self.parent().books_data[self.parent().ui.tableWidget.currentRow()][0]
                 # Копируем новое фото
                 if photo_path:
-                    import shutil, os
                     if not os.path.exists('imports'):
                         os.makedirs('imports')
-                # Получаем старое фото для удаления
-                    cursor.execute('SELECT Фото FROM Книги WHERE idКниги=?', [book_id])
-                    old_photo = cursor.fetchone()[0]
-                    
-                    # Копируем новое фото ТОЛЬКО если оно выбрано и отличается от старого
-                    if photo_path and photo_path != f'imports/{old_photo}':
-                        if not os.path.exists('imports'):
-                            os.makedirs('imports')
-                        
-                        # Удаляем старое фото, если оно есть и отличается от нового
-                        if old_photo and old_photo != photo_name:
-                            try:
-                                os.remove('imports/' + old_photo)
-                            except:
-                                pass
-                        
-                        # Копируем новое фото
-                        shutil.copy(photo_path, 'imports/' + photo_name)
+                    # Копируем новое фото
+                    shutil.copy(photo_path, 'imports/' + photo_name)
                 cursor.execute("UPDATE Книги SET Название=?, Издательство=?, Автор=?, \"Год издания\"=?, Цена=?, Фото=? WHERE idКниги=?", partner_data + [book_id])
                 conn.commit()
                 main_form.read_partners() #Обновление списка партнеров на главное окне
