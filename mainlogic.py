@@ -59,31 +59,43 @@ class partner_window (QDialog): #Класс главного окна добав
             print(e)
     def create_partner(self):
         photo_path = self.ui.lineEdit_8.text()#поле для фото
-        if photo_path:
-            photo_name = photo_path.split('/')[-1]
-        else:
-            photo_name = ' '
         partner_data = [
             self.ui.lineEdit.text(),  # Название
             self.ui.lineEdit_2.text(),  # Издательство
             self.ui.lineEdit_3.text(),  # Автор
             self.ui.lineEdit_4.text(),  # Год издания
             self.ui.lineEdit_5.text(),  # Цена
-            photo_name # Фото
+            ' '  # Фото
         ]
-        if any([item == ' ' for item in partner_data]): #Проверка на пустые значения
+        if any([item == ' ' for item in partner_data[:-1]]): #Проверка на пустые значения
             QMessageBox.critical(self, 'Действие не выполнено',  'Заполните поля', QMessageBox.Ok)
             return
         q = QMessageBox.question(self, 'Подтвердите действие', 'Вы действительно хотите добавить?', QMessageBox.Ok | QMessageBox.Cancel)
         if q == QMessageBox.Ok:
             try:
-                # Копируем фото в папку imports
-                if photo_path:
-                    if not os.path.exists('imports'):
-                        os.makedirs('imports')
-                    shutil.copy(photo_path, 'imports/' + photo_name)
                 cursor.execute("INSERT INTO Книги (Название, Издательство, Автор, \"Год издания\", Цена, Фото) VALUES (?,?,?,?,?,?)", partner_data)
                 conn.commit()
+                new_id = cursor.lastrowid #Получ. фото для новой книги
+                #Если есть фото, обрабатываем его
+                if photo_path:
+                    # Создаем папку imports, если её нет
+                    if not os.path.exists('imports'):
+                        os.makedirs('imports')
+                    
+                    # Получаем расширение файла
+                    file_ext = photo_path.split('.')[-1]
+                    
+                    # Создаем уникальное имя файла на основе ID книги
+                    photo_name = f"book_{new_id}.{file_ext}"
+                    
+                    # Копируем фото с новым именем
+                    shutil.copy(photo_path, 'imports/' + photo_name)
+                    #Обновляем запись с правильным именем фото
+                    cursor.execute("UPDATE Книги SET Фото=? WHERE idКниги=?", [photo_name, new_id])
+                    conn.commit()
+
+
+                    
                 main_form.read_partners() #Обновление списка партнеров на главное окне
                 QMessageBox.information(self, 'Действие выполнено' , 'Добавлен', QMessageBox.Ok)
                 self.accept() #Закрытие диалоговое окна
