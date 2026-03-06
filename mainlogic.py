@@ -5,7 +5,7 @@ import sys
 import sqlite3 
 from IndividInterface import Ui_Form as main_interface #Импорт интерфейса
 from IndividDobavRedakt import Ui_Dialog as partner_interface
-from login import Ui_Dialog as login_interfacec
+from login import Ui_Dialog as login_interface
 from menu import Ui_Form as menu_interface  # Импорт интерфейса меню
 import os
 import shutil
@@ -21,7 +21,7 @@ class menuWindow(QWidget):  # Окно выбора таблицы
         self.ui.pushButton_2.clicked.connect(self.open_knigi)  # Книги
         self.ui.pushButton_3.clicked.connect(self.open_buyers)  # Оптовые покупатели
         self.ui.pushButton_4.clicked.connect(self.open_orders)  # Заказы
-        self.pushButton.clicked.connect(self.ex) #Выход
+        self.ui.pushButton.clicked.connect(self.ex) #Выход
     def ex(self):
         Form.close()
     def open_knigi(self):
@@ -278,18 +278,15 @@ conn = sqlite3.connect('knigi') #подключение к БД
 cursor = conn.cursor() #создание объекта курсора 
 app = QApplication(sys.argv)#создание объекта главного окна
  
-# СОЗДАЕМ главное окно (НО НЕ ПОКАЗЫВАЕМ)
-main_form = main_window()
-# СОЗДАЕМ И ПОКАЗЫВАЕМ окно логина
-login_form = loginWindow()
-# Запускаем окно логина и проверяем результат
-result = login_form.exec_()
-# Если пользователь нажал OK (успешный вход как админ)
-if result == QDialog.Accepted:
+
+main_form = None #Окно меню создаем
+login_form = loginWindow() #Окно логина создаем и показываем
+result = login_form.exec_()#Запускаем окно логина
+if result == QDialog.Accepted: #Если пользователь нажал ОК
+    menu_form = menuWindow() #Создаем и показываем экран с кнопками
     main_form.show()
     sys.exit(app.exec_())
-# Если пользователь нажал Cancel (вход как гость)
-else:
+else: #Если cancel, то выход
     cursor.close()
     conn.close()
     sys.exit()
