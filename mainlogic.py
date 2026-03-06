@@ -15,6 +15,194 @@ import os
 import shutil
 from PIL import Image
 from PyQt5.QtGui import QIcon, QPixmap
+class orders_window(QWidget):  # Окно со списком заказов
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        self.ui = orders_interface()
+        self.ui.setupUi(self)
+        self.read_orders()
+        self.ui.pushButton.clicked.connect(self.open_add)  # Добавить
+        self.ui.pushButton_2.clicked.connect(self.dell)    # Удалить
+        self.ui.tableWidget.itemDoubleClicked.connect(self.open_update)  # Редактировать
+    
+    def read_orders(self):
+        #Чтение данных из таблицы Заказики с подстановкой названий
+        self.ui.tableWidget.setRowCount(0)
+        
+        # Запрос с JOIN, чтобы получить названия книги и фирмы
+        query = '''
+        SELECT Заказики.*, Книги.Название, ОптовыеПокупатели.ФирмаПокупатель 
+        FROM Заказики
+        LEFT JOIN Книги ON Заказики.idКниги = Книги.idКниги
+        LEFT JOIN ОптовыеПокупатели ON Заказики.idПокупатели = ОптовыеПокупатели.idПокупателя
+        '''
+        cursor.execute(query)
+        self.orders_data = cursor.fetchall()
+
+        self.ui.tableWidget.setRowCount(len(self.orders_data))
+        self.ui.tableWidget.setColumnCount(6)
+        
+        # Устанавливаем заголовки
+        self.ui.tableWidget.setHorizontalHeaderLabels(
+            ['ID', 'Дата заказа', 'Количество', 'Скидка', 'Книга', 'Покупатель']
+        )
+        self.ui.tableWidget.horizontalHeader().setVisible(True)
+        
+        for row in range(len(self.orders_data)):
+            data = self.orders_data[row]
+            # Колонка 0 - ID
+            item_id = QTableWidgetItem()
+            item_id.setText(str(data[0]))
+            self.ui.tableWidget.setItem(row, 0, item_id)
+            
+            # Колонка 1 - Дата заказа
+            item_date = QTableWidgetItem()
+            item_date.setText(str(data[1]))
+            self.ui.tableWidget.setItem(row, 1, item_date)
+            
+            # Колонка 2 - Количество
+            item_count = QTableWidgetItem()
+            item_count.setText(str(data[2]))
+            self.ui.tableWidget.setItem(row, 2, item_count)
+            
+            # Колонка 3 - Скидка
+            item_discount = QTableWidgetItem()
+            item_discount.setText(str(data[3]) + '%')
+            self.ui.tableWidget.setItem(row, 3, item_discount)
+            
+            # Колонка 4 - Название книги
+            item_book = QTableWidgetItem()
+            item_book.setText(str(data[6]) if data[6] else '')
+            self.ui.tableWidget.setItem(row, 4, item_book)
+            
+            # Колонка 5 - Фирма покупателя
+            item_buyer = QTableWidgetItem()
+            item_buyer.setText(str(data[7]) if data[7] else '')
+            self.ui.tableWidget.setItem(row, 5, item_buyer)
+        
+        self.ui.tableWidget.resizeRowsToContents()
+    
+    def open_add(self):
+        #Открыть окно добавления заказа
+        self.edit_form = orders_edit_window(self)
+        self.edit_form.ui.buttonBox.accepted.connect(self.edit_form.create)
+        self.edit_form.exec_()
+    
+    def open_update(self):
+        #Открыть окно редактирования заказа
+        current_row = self.ui.tableWidget.currentRow()
+        if current_row >= 0 and current_row < len(self.orders_data):
+            self.edit_form = orders_edit_window(self)
+            order_data = self.orders_data[current_row]
+            
+            # Заполняем поля данными
+            self.edit_form.ui.lineEdit.setText(str(order_data[1]))  # Дата
+            self.edit_form.ui.lineEdit_2.setText(str(order_data[2]))  # Количество
+            self.edit_form.ui.lineEdit_3.setText(str(order_data[3]))  # Скидка
+            self.edit_form.order_id = order_data[0]  # Сохраняем ID
+            
+            self.edit_form.ui.buttonBox.accepted.connect(self.edit_form.update)
+            self.edit_form.exec_()
+    
+    def dell(self):
+        #Удаление заказа
+        r = self.ui.tableWidget.currentRow()
+        if r == -1:
+            QMessageBox.critical(self, 'Ошибка', 'Выберите заказ для удаления.', QMessageBox.Ok)
+            return
+        
+        order_id = self.orders_data[r][0]
+        
+        q = QMessageBox.question(self, 'Подтвердите действие', 'Удалить заказ?', 
+                                QMessageBox.Ok | QMessageBox.Cancel)
+        
+        if q == QMessageBox.Ok:
+            try:
+                cursor.execute('DELETE FROM Заказики WHERE idЗаказа=?', [order_id])
+                conn.commit()
+                self.read_orders()
+                QMessageBox.information(self, 'Информация', 'Заказ удален.', QMessageBox.Ok)
+            except Exception as e:
+                QMessageBox.critical(self, 'Ошибка', f'Ошибка удаления: {str(e)}', QMessageBox.Ok)
+
+
+class orders_edit_window(QDialog):  # Окно добавления/редактирования заказа
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
+        self.ui = orders_edit_interface()
+        self.ui.setupUi(self)
+        self.order_id = None
+        self.load_combo_boxes()
+    
+    def load_combo_boxes(self):#Загружаем списки книг и покупателей в комбобоксы
+        pass
+    
+    def create(self):
+        #Добавление нового заказа#
+        data = [
+            self.ui.lineEdit.text(),   # Дата заказа
+            self.ui.lineEdit_2.text(),  # Количество
+            self.ui.lineEdit_3.text(),  # Скидка
+            # TODO: нужно добавить выбор idКниги и idПокупатели
+        ]
+        
+        if any([item == '' for item in data]):
+            QMessageBox.critical(self, 'Ошибка', 'Заполните все поля', QMessageBox.Ok)
+            return
+        
+        # TODO: добавить выбор книги и покупателя
+        # Пока заглушка - спросим ID
+        book_id, ok = QInputDialog.getInt(self, 'Выбор книги', 'Введите ID книги:')
+        if not ok:
+            return
+        buyer_id, ok = QInputDialog.getInt(self, 'Выбор покупателя', 'Введите ID покупателя:')
+        if not ok:
+            return
+        
+        q = QMessageBox.question(self, 'Подтверждение', 'Добавить заказ?', 
+                                QMessageBox.Ok | QMessageBox.Cancel)
+        
+        if q == QMessageBox.Ok:
+            try:
+                cursor.execute(
+                    "INSERT INTO Заказики (\"Дата заказа\", Количество, Скидка, idКниги, idПокупатели) VALUES (?,?,?,?,?)",
+                    data + [book_id, buyer_id]
+                )
+                conn.commit()
+                self.parent().read_orders()
+                QMessageBox.information(self, 'Информация', 'Заказ добавлен', QMessageBox.Ok)
+                self.accept()
+            except Exception as e:
+                QMessageBox.critical(self, 'Ошибка', f'Ошибка: {str(e)}', QMessageBox.Ok)
+    
+    def update(self):
+        #Редактирование заказа
+        data = [
+            self.ui.lineEdit.text(),   # Дата заказа
+            self.ui.lineEdit_2.text(),  # Количество
+            self.ui.lineEdit_3.text(),  # Скидка
+            self.order_id
+        ]
+        
+        if any([item == '' for item in data[:-1]]):
+            QMessageBox.critical(self, 'Ошибка', 'Заполните все поля', QMessageBox.Ok)
+            return
+        
+        q = QMessageBox.question(self, 'Подтверждение', 'Изменить заказ?', 
+                                QMessageBox.Ok | QMessageBox.Cancel)
+        
+        if q == QMessageBox.Ok:
+            try:
+                cursor.execute(
+                    "UPDATE Заказики SET \"Дата заказа\"=?, Количество=?, Скидка=? WHERE idЗаказа=?",
+                    data
+                )
+                conn.commit()
+                self.parent().read_orders()
+                QMessageBox.information(self, 'Информация', 'Заказ обновлен', QMessageBox.Ok)
+                self.accept()
+            except Exception as e:
+                QMessageBox.critical(self, 'Ошибка', f'Ошибка: {str(e)}', QMessageBox.Ok)
 class buyers_window(QWidget):  # Окно со списком оптовых покупателей
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
@@ -185,14 +373,15 @@ class menuWindow(QWidget):  # Окно выбора таблицы
         global main_form
         #Открыть таблицу заказы
         if self.buyers_window is None:
-            self.buyers_window = main_window()
-        main_form = self.buyers_window
+            self.buyers_window = buyers_window()
         self.buyers_window.show()  # Показываем его
     
     def open_orders(self):
         #Открыть таблицу заказов
-        QMessageBox.information(self, 'Информация', 'Таблица заказов в разработке', QMessageBox.Ok)
-        # Здесь вызов окна с заказами
+        if self.orders_window is None:
+            self.orders_window = orders_window()
+        self.orders_window.show()
+       
 class loginWindow(QDialog): #окно логирования
     def __init__(self, parent = None):
         QDialog.__init__(self, parent)
