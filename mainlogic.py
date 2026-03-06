@@ -15,6 +15,146 @@ import os
 import shutil
 from PIL import Image
 from PyQt5.QtGui import QIcon, QPixmap
+class buyers_window(QWidget):  # Окно со списком оптовых покупателей
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        self.ui = buyers_interface()
+        self.ui.setupUi(self)
+        self.read_buyers()
+        self.ui.pushButton.clicked.connect(self.open_add)  # Добавить
+        self.ui.pushButton_2.clicked.connect(self.dell)    # Удалить
+        self.ui.tableWidget.itemDoubleClicked.connect(self.open_update)  # Редактировать по двойному клику
+    
+    def read_buyers(self):
+        #Чтение данных из таблицы ОптовыеПокупатели
+        self.ui.tableWidget.setRowCount(0)
+        cursor.execute('SELECT * FROM ОптовыеПокупатели')
+        self.buyers_data = cursor.fetchall()
+
+        self.ui.tableWidget.setRowCount(len(self.buyers_data))
+        self.ui.tableWidget.setColumnCount(2)
+        
+        # Устанавливаем заголовки
+        self.ui.tableWidget.setHorizontalHeaderLabels(['Фирма покупатель', 'Город'])
+        self.ui.tableWidget.horizontalHeader().setVisible(True)
+        
+        for row in range(len(self.buyers_data)):
+            # Колонка 0 - Фирма
+            item_firm = QTableWidgetItem()
+            item_firm.setText(str(self.buyers_data[row][1]))  # ФирмаПокупатель
+            self.ui.tableWidget.setItem(row, 0, item_firm)
+            
+            # Колонка 1 - Город
+            item_city = QTableWidgetItem()
+            item_city.setText(str(self.buyers_data[row][2]))  # Город
+            self.ui.tableWidget.setItem(row, 1, item_city)
+        
+        self.ui.tableWidget.resizeRowsToContents()
+    
+    def open_add(self):
+        #Открыть окно добавления покупателя
+        self.edit_form = buyers_edit_window(self)
+        self.edit_form.ui.buttonBox.accepted.connect(self.edit_form.create)
+        self.edit_form.exec_()
+    
+    def open_update(self):
+        #Открыть окно редактирования покупателя
+        current_row = self.ui.tableWidget.currentRow()
+        if current_row >= 0 and current_row < len(self.buyers_data):
+            self.edit_form = buyers_edit_window(self)
+            buyer_data = self.buyers_data[current_row]
+            
+            # Заполняем поля данными
+            self.edit_form.ui.lineEdit.setText(str(buyer_data[1]))  # Фирма
+            self.edit_form.ui.lineEdit_2.setText(str(buyer_data[2]))  # Город
+            self.edit_form.buyer_id = buyer_data[0]  # Сохраняем ID
+            
+            self.edit_form.ui.buttonBox.accepted.connect(self.edit_form.update)
+            self.edit_form.exec_()
+    
+    def dell(self):
+        #Удаление покупателя
+        r = self.ui.tableWidget.currentRow()
+        if r == -1:
+            QMessageBox.critical(self, 'Ошибка', 'Выберите покупателя для удаления.', QMessageBox.Ok)
+            return
+        
+        buyer_id = self.buyers_data[r][0]
+        
+        # Проверяем, есть ли заказы у этого покупателя
+        cursor.execute('SELECT COUNT(*) FROM Заказики WHERE idПокупатели=?', [buyer_id])
+        count = int(cursor.fetchone()[0])
+        
+        if count == 0:
+            q = QMessageBox.question(self, 'Подтвердите действие', 'Удалить покупателя?', 
+                                    QMessageBox.Ok | QMessageBox.Cancel)
+            if q == QMessageBox.Ok:
+                try:
+                    cursor.execute('DELETE FROM ОптовыеПокупатели WHERE idПокупателя=?', [buyer_id])
+                    conn.commit()
+                    self.read_buyers()
+                    QMessageBox.information(self, 'Информация', 'Покупатель удален.', QMessageBox.Ok)
+                except Exception as e:
+                    QMessageBox.critical(self, 'Ошибка', f'Ошибка удаления: {str(e)}', QMessageBox.Ok)
+        else:
+            QMessageBox.critical(self, 'Ошибка', 'Нельзя удалить покупателя, у которого есть заказы.', QMessageBox.Ok)
+
+
+class buyers_edit_window(QDialog):  # Окно добавления/редактирования покупателя
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
+        self.ui = buyers_edit_interface()
+        self.ui.setupUi(self)
+        self.buyer_id = None  # ID для редактирования
+    
+    def create(self):
+        #Добавление нового покупателя
+        data = [
+            self.ui.lineEdit.text(),   # Фирма
+            self.ui.lineEdit_2.text()   # Город
+        ]
+        
+        if any([item == '' for item in data]):
+            QMessageBox.critical(self, 'Ошибка', 'Заполните все поля', QMessageBox.Ok)
+            return
+        
+        q = QMessageBox.question(self, 'Подтверждение', 'Добавить покупателя?', 
+                                QMessageBox.Ok | QMessageBox.Cancel)
+        
+        if q == QMessageBox.Ok:
+            try:
+                cursor.execute("INSERT INTO ОптовыеПокупатели (ФирмаПокупатель, Город) VALUES (?,?)", data)
+                conn.commit()
+                self.parent().read_buyers()  # Обновляем таблицу в родительском окне
+                QMessageBox.information(self, 'Информация', 'Покупатель добавлен', QMessageBox.Ok)
+                self.accept()
+            except Exception as e:
+                QMessageBox.critical(self, 'Ошибка', f'Ошибка: {str(e)}', QMessageBox.Ok)
+    
+    def update(self):
+        #Редактирование покупателя
+        data = [
+            self.ui.lineEdit.text(),   # Фирма
+            self.ui.lineEdit_2.text(),  # Город
+            self.buyer_id               # ID для WHERE
+        ]
+        
+        if any([item == '' for item in data[:-1]]):
+            QMessageBox.critical(self, 'Ошибка', 'Заполните все поля', QMessageBox.Ok)
+            return
+        
+        q = QMessageBox.question(self, 'Подтверждение', 'Изменить данные покупателя?', 
+                                QMessageBox.Ok | QMessageBox.Cancel)
+        
+        if q == QMessageBox.Ok:
+            try:
+                cursor.execute("UPDATE ОптовыеПокупатели SET ФирмаПокупатель=?, Город=? WHERE idПокупателя=?", data)
+                conn.commit()
+                self.parent().read_buyers()
+                QMessageBox.information(self, 'Информация', 'Данные обновлены', QMessageBox.Ok)
+                self.accept()
+            except Exception as e:
+                QMessageBox.critical(self, 'Ошибка', f'Ошибка: {str(e)}', QMessageBox.Ok)
 class menuWindow(QWidget):  # Окно выбора таблицы
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
