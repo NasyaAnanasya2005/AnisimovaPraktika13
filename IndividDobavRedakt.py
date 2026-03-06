@@ -14,13 +14,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(641, 426)
+        Dialog.resize(641, 526)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../../../Downloads/free-icon-open-book-2702134.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Dialog.setWindowIcon(icon)
         Dialog.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(320, 370, 301, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(320, 460, 301, 32))
         self.buttonBox.setStyleSheet("font: 12pt \"Segoe UI\";\n"
 "\n"
 "background-color: rgb(103, 186, 128);")
@@ -73,6 +73,21 @@ class Ui_Dialog(object):
         self.lineEdit_3.setGeometry(QtCore.QRect(150, 220, 471, 41))
         self.lineEdit_3.setObjectName("lineEdit_3")
 
+        self.label_8 = QtWidgets.QLabel(Dialog)
+        self.label_8.setGeometry(QtCore.QRect(10, 380, 131, 31))
+        self.label_8.setStyleSheet("font: 12pt \"Segoe UI\";")
+        self.label_8.setObjectName("label_8")
+        self.lineEdit_8 = QtWidgets.QLineEdit(Dialog)
+        self.lineEdit_8.setGeometry(QtCore.QRect(150, 380, 271, 41))
+        self.lineEdit_8.setObjectName("lineEdit_8")
+
+        self.pushButtonPhoto = QtWidgets.QPushButton(Dialog)
+        self.pushButtonPhoto.setGeometry(QtCore.QRect(450, 380, 100, 41))
+        self.pushButtonPhoto.setStyleSheet("font: 12pt \"Segoe UI\";\n"
+"\n"
+"background-color: rgb(103, 186, 128);")
+        self.pushButtonPhoto.setObjectName("pushButton")
+
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept) # type: ignore
         self.buttonBox.rejected.connect(Dialog.reject) # type: ignore
@@ -86,6 +101,8 @@ class Ui_Dialog(object):
         self.label_5.setText(_translate("Dialog", "Год издания"))
         self.label_3.setText(_translate("Dialog", "Издательство"))
         self.label_6.setText(_translate("Dialog", "Цена"))
+        self.label_8.setText(_translate("Dialog", "Путь к фото"))
+        self.pushButtonPhoto.setText(_translate("Form", "Выбрать"))
 
 
 if __name__ == "__main__":
