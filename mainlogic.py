@@ -7,6 +7,10 @@ from IndividInterface import Ui_Form as main_interface #Импорт интер�
 from IndividDobavRedakt import Ui_Dialog as partner_interface
 from login import Ui_Dialog as login_interface
 from menu import Ui_Form as menu_interface  # Импорт интерфейса меню
+from IndividInterfaceOptBuy import Ui_Form as buyers_interface
+from OptBuyDobavRedakt import Ui_Dialog as buyers_edit_interface
+from IndividInterfaceZakaziki import Ui_Form as orders_interface  # Для заказов
+from ZakazDobavRedakt import Ui_Dialog as orders_edit_interface
 import os
 import shutil
 from PIL import Image
