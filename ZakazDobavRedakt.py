@@ -14,13 +14,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(641, 342)
+        Dialog.resize(641, 449)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../../../Downloads/free-icon-open-book-2702134.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Dialog.setWindowIcon(icon)
         Dialog.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
-        self.buttonBox.setGeometry(QtCore.QRect(310, 280, 301, 32))
+        self.buttonBox.setGeometry(QtCore.QRect(330, 400, 301, 32))
         self.buttonBox.setStyleSheet("font: 12pt \"Segoe UI\";\n"
 "\n"
 "background-color: rgb(103, 186, 128);")
@@ -56,6 +56,20 @@ class Ui_Dialog(object):
         self.lineEdit_3 = QtWidgets.QLineEdit(Dialog)
         self.lineEdit_3.setGeometry(QtCore.QRect(150, 220, 471, 41))
         self.lineEdit_3.setObjectName("lineEdit_3")
+        self.comboBox = QtWidgets.QComboBox(Dialog)
+        self.comboBox.setGeometry(QtCore.QRect(200, 280, 101, 31))
+        self.comboBox.setObjectName("comboBox")
+        self.label_5 = QtWidgets.QLabel(Dialog)
+        self.label_5.setGeometry(QtCore.QRect(30, 280, 161, 31))
+        self.label_5.setStyleSheet("font: 12pt \"Segoe UI\";")
+        self.label_5.setObjectName("label_5")
+        self.label_6 = QtWidgets.QLabel(Dialog)
+        self.label_6.setGeometry(QtCore.QRect(30, 330, 161, 31))
+        self.label_6.setStyleSheet("font: 12pt \"Segoe UI\";")
+        self.label_6.setObjectName("label_6")
+        self.comboBox_2 = QtWidgets.QComboBox(Dialog)
+        self.comboBox_2.setGeometry(QtCore.QRect(200, 330, 101, 31))
+        self.comboBox_2.setObjectName("comboBox_2")
 
         self.retranslateUi(Dialog)
         self.buttonBox.accepted.connect(Dialog.accept) # type: ignore
@@ -68,6 +82,8 @@ class Ui_Dialog(object):
         self.label_2.setText(_translate("Dialog", "Дата заказа"))
         self.label_4.setText(_translate("Dialog", "Скидка"))
         self.label_3.setText(_translate("Dialog", "Количество"))
+        self.label_5.setText(_translate("Dialog", "Выберите книгу"))
+        self.label_6.setText(_translate("Dialog", "Выберите фирму"))
 
 
 if __name__ == "__main__":

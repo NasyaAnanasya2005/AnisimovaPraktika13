@@ -40,45 +40,40 @@ class orders_window(QWidget):  # Окно со списком заказов
         self.orders_data = cursor.fetchall()
 
         self.ui.tableWidget.setRowCount(len(self.orders_data))
-        self.ui.tableWidget.setColumnCount(6)
+        self.ui.tableWidget.setColumnCount(5)
         
         # Устанавливаем заголовки
         self.ui.tableWidget.setHorizontalHeaderLabels(
-            ['ID', 'Дата заказа', 'Количество', 'Скидка', 'Книга', 'Покупатель']
+            ['Дата заказа', 'Количество', 'Скидка', 'Книга', 'Покупатель']
         )
         self.ui.tableWidget.horizontalHeader().setVisible(True)
         
         for row in range(len(self.orders_data)):
             data = self.orders_data[row]
-            # Колонка 0 - ID
-            item_id = QTableWidgetItem()
-            item_id.setText(str(data[0]))
-            self.ui.tableWidget.setItem(row, 0, item_id)
-            
             # Колонка 1 - Дата заказа
             item_date = QTableWidgetItem()
             item_date.setText(str(data[1]))
-            self.ui.tableWidget.setItem(row, 1, item_date)
+            self.ui.tableWidget.setItem(row, 0, item_date)
             
             # Колонка 2 - Количество
             item_count = QTableWidgetItem()
             item_count.setText(str(data[2]))
-            self.ui.tableWidget.setItem(row, 2, item_count)
+            self.ui.tableWidget.setItem(row, 1, item_count)
             
             # Колонка 3 - Скидка
             item_discount = QTableWidgetItem()
             item_discount.setText(str(data[3]) + '%')
-            self.ui.tableWidget.setItem(row, 3, item_discount)
+            self.ui.tableWidget.setItem(row, 2, item_discount)
             
             # Колонка 4 - Название книги
             item_book = QTableWidgetItem()
             item_book.setText(str(data[6]) if data[6] else '')
-            self.ui.tableWidget.setItem(row, 4, item_book)
+            self.ui.tableWidget.setItem(row, 3, item_book)
             
             # Колонка 5 - Фирма покупателя
             item_buyer = QTableWidgetItem()
             item_buyer.setText(str(data[7]) if data[7] else '')
-            self.ui.tableWidget.setItem(row, 5, item_buyer)
+            self.ui.tableWidget.setItem(row, 4, item_buyer)
         
         self.ui.tableWidget.resizeRowsToContents()
     
@@ -100,7 +95,15 @@ class orders_window(QWidget):  # Окно со списком заказов
             self.edit_form.ui.lineEdit_2.setText(str(order_data[2]))  # Количество
             self.edit_form.ui.lineEdit_3.setText(str(order_data[3]))  # Скидка
             self.edit_form.order_id = order_data[0]  # Сохраняем ID
+            # Устанавливаем значения в комбобоксах
+            # Ищем индекс элемента с нужным ID
+            book_index = self.edit_form.ui.comboBox.findData(order_data[4])  # idКниги
+            if book_index >= 0:
+                self.edit_form.ui.comboBox.setCurrentIndex(book_index)
             
+            buyer_index = self.edit_form.ui.comboBox_2.findData(order_data[5])  # idПокупатели
+            if buyer_index >= 0:
+                self.edit_form.ui.comboBox_2.setCurrentIndex(buyer_index)
             self.edit_form.ui.buttonBox.accepted.connect(self.edit_form.update)
             self.edit_form.exec_()
     
@@ -133,30 +136,46 @@ class orders_edit_window(QDialog):  # Окно добавления/редакт
         self.ui.setupUi(self)
         self.order_id = None
         self.load_combo_boxes()
-    
+        # Словари для хранения соответствия между названиями и ID
+        self.books_dict = {}  # {название: id}
+        self.buyers_dict = {}  # {фирма: id}
     def load_combo_boxes(self):#Загружаем списки книг и покупателей в комбобоксы
-        pass
+        # Загружаем книги
+        self.ui.comboBox.clear()
+        cursor.execute('SELECT idКниги, Название FROM Книги ORDER BY Название')
+        books = cursor.fetchall()
+        
+        self.books_dict = {}
+        for book_id, book_name in books:
+            self.ui.comboBox.addItem(book_name, book_id)  # Храним ID как данные элемента
+            self.books_dict[book_name] = book_id
+        
+        # Загружаем покупателей
+        self.ui.comboBox_2.clear()
+        cursor.execute('SELECT idПокупателя, ФирмаПокупатель FROM ОптовыеПокупатели ORDER BY ФирмаПокупатель')
+        buyers = cursor.fetchall()
+        
+        self.buyers_dict = {}
+        for buyer_id, buyer_name in buyers:
+            self.ui.comboBox_2.addItem(buyer_name, buyer_id)  # Храним ID как данные элемента
+            self.buyers_dict[buyer_name] = buyer_id
     
     def create(self):
         #Добавление нового заказа#
-        data = [
-            self.ui.lineEdit.text(),   # Дата заказа
-            self.ui.lineEdit_2.text(),  # Количество
-            self.ui.lineEdit_3.text(),  # Скидка
-            # TODO: нужно добавить выбор idКниги и idПокупатели
-        ]
+        date = self.ui.lineEdit.text()
+        quantity = self.ui.lineEdit_2.text()
+        discount = self.ui.lineEdit_3.text()
+        book_id = self.ui.comboBox.currentData()  # Получаем сохраненный ID
+        buyer_id = self.ui.comboBox_2.currentData()
         
-        if any([item == '' for item in data]):
+        
+        # Проверяем, что все поля заполнены
+        if not date or not quantity or not discount:
             QMessageBox.critical(self, 'Ошибка', 'Заполните все поля', QMessageBox.Ok)
             return
         
-        # TODO: добавить выбор книги и покупателя
-        # Пока заглушка - спросим ID
-        book_id, ok = QInputDialog.getInt(self, 'Выбор книги', 'Введите ID книги:')
-        if not ok:
-            return
-        buyer_id, ok = QInputDialog.getInt(self, 'Выбор покупателя', 'Введите ID покупателя:')
-        if not ok:
+        if book_id is None or buyer_id is None:
+            QMessageBox.critical(self, 'Ошибка', 'Выберите книгу и покупателя', QMessageBox.Ok)
             return
         
         q = QMessageBox.question(self, 'Подтверждение', 'Добавить заказ?', 
@@ -166,26 +185,30 @@ class orders_edit_window(QDialog):  # Окно добавления/редакт
             try:
                 cursor.execute(
                     "INSERT INTO Заказики (\"Дата заказа\", Количество, Скидка, idКниги, idПокупатели) VALUES (?,?,?,?,?)",
-                    data + [book_id, buyer_id]
+                    [date, quantity, discount, book_id, buyer_id]
                 )
                 conn.commit()
-                self.parent().read_orders()
+                self.parent().read_orders()  # Обновляем таблицу в родительском окне
                 QMessageBox.information(self, 'Информация', 'Заказ добавлен', QMessageBox.Ok)
                 self.accept()
             except Exception as e:
-                QMessageBox.critical(self, 'Ошибка', f'Ошибка: {str(e)}', QMessageBox.Ok)
-    
+                QMessageBox.critical(self, 'Ошибка', f'Ошибка добавления: {str(e)}', QMessageBox.Ok)
     def update(self):
         #Редактирование заказа
-        data = [
-            self.ui.lineEdit.text(),   # Дата заказа
-            self.ui.lineEdit_2.text(),  # Количество
-            self.ui.lineEdit_3.text(),  # Скидка
-            self.order_id
-        ]
+        date = self.ui.lineEdit.text()
+        quantity = self.ui.lineEdit_2.text()
+        discount = self.ui.lineEdit_3.text()
         
-        if any([item == '' for item in data[:-1]]):
+        # Получаем ID из комбобоксов
+        book_id = self.ui.comboBox.currentData()
+        buyer_id = self.ui.comboBox_2.currentData()
+        
+        if not date or not quantity or not discount:
             QMessageBox.critical(self, 'Ошибка', 'Заполните все поля', QMessageBox.Ok)
+            return
+        
+        if book_id is None or buyer_id is None:
+            QMessageBox.critical(self, 'Ошибка', 'Выберите книгу и покупателя', QMessageBox.Ok)
             return
         
         q = QMessageBox.question(self, 'Подтверждение', 'Изменить заказ?', 
@@ -194,15 +217,15 @@ class orders_edit_window(QDialog):  # Окно добавления/редакт
         if q == QMessageBox.Ok:
             try:
                 cursor.execute(
-                    "UPDATE Заказики SET \"Дата заказа\"=?, Количество=?, Скидка=? WHERE idЗаказа=?",
-                    data
+                    "UPDATE Заказики SET \"Дата заказа\"=?, Количество=?, Скидка=?, idКниги=?, idПокупатели=? WHERE idЗаказа=?",
+                    [date, quantity, discount, book_id, buyer_id, self.order_id]
                 )
                 conn.commit()
                 self.parent().read_orders()
                 QMessageBox.information(self, 'Информация', 'Заказ обновлен', QMessageBox.Ok)
                 self.accept()
             except Exception as e:
-                QMessageBox.critical(self, 'Ошибка', f'Ошибка: {str(e)}', QMessageBox.Ok)
+                QMessageBox.critical(self, 'Ошибка', f'Ошибка изменения: {str(e)}', QMessageBox.Ok)
 class buyers_window(QWidget):  # Окно со списком оптовых покупателей
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
